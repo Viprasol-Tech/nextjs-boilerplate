@@ -53,6 +53,26 @@ export function optionalEnv(
   return raw.trim();
 }
 
+/**
+ * Reads a required variable that must be a valid absolute http(s) URL.
+ * Throws a descriptive error when missing, blank, or malformed.
+ */
+export function requireUrl(key: string, source: EnvSource): string {
+  const raw = requireEnv(key, source);
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    throw new Error(`Invalid URL in environment variable ${key}: ${raw}`);
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(
+      `Environment variable ${key} must be an http(s) URL, got: ${raw}`,
+    );
+  }
+  return raw.trim();
+}
+
 /** Coerces an arbitrary string into a known `NodeEnv`, defaulting safely. */
 export function parseNodeEnv(value: string | undefined): NodeEnv {
   if (value && (VALID_NODE_ENVS as readonly string[]).includes(value)) {

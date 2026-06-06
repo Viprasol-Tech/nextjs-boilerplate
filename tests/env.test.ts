@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   requireEnv,
   optionalEnv,
+  requireUrl,
   parseNodeEnv,
   readEnv,
 } from "@/lib/env";
@@ -33,6 +34,36 @@ describe("optionalEnv", () => {
 
   it("returns the fallback when blank", () => {
     expect(optionalEnv("KEY", "fallback", { KEY: "" })).toBe("fallback");
+  });
+});
+
+describe("requireUrl", () => {
+  it("returns a valid https url", () => {
+    expect(requireUrl("URL", { URL: "https://example.com" })).toBe(
+      "https://example.com",
+    );
+  });
+
+  it("accepts http urls", () => {
+    expect(requireUrl("URL", { URL: "http://localhost:3000" })).toBe(
+      "http://localhost:3000",
+    );
+  });
+
+  it("throws when missing", () => {
+    expect(() => requireUrl("URL", {})).toThrow(
+      /Missing required environment variable/,
+    );
+  });
+
+  it("throws on a malformed url", () => {
+    expect(() => requireUrl("URL", { URL: "not a url" })).toThrow(/Invalid URL/);
+  });
+
+  it("rejects non-http protocols", () => {
+    expect(() => requireUrl("URL", { URL: "ftp://example.com" })).toThrow(
+      /must be an http\(s\) URL/,
+    );
   });
 });
 

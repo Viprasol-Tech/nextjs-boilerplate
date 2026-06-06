@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
 
 const FEATURES: { title: string; body: string }[] = [
   {
@@ -12,12 +13,20 @@ const FEATURES: { title: string; body: string }[] = [
     body: "Strict compiler settings and path aliases (@/*) preconfigured.",
   },
   {
-    title: "Tailwind CSS",
-    body: "Utility-first styling with a small, themeable design token set.",
+    title: "Tailwind + dark mode",
+    body: "Utility-first styling with a class-based light/dark/system theme.",
   },
   {
-    title: "Tested logic",
-    body: "Typed env access and SEO helpers in lib/, covered by Vitest.",
+    title: "Typed env & SEO",
+    body: "Validated env access and a metadata builder with JSON-LD, all tested.",
+  },
+  {
+    title: "Fetch & format utils",
+    body: "A typed fetch wrapper with timeouts plus pure formatting helpers.",
+  },
+  {
+    title: "API route + health",
+    body: "A /api/health route handler and a /status page that consumes it.",
   },
 ];
 
@@ -28,12 +37,12 @@ export default function HomePage() {
         <p className="text-sm font-medium uppercase tracking-wide text-brand">
           Next.js Boilerplate
         </p>
-        <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+        <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
           A clean App Router starter.
         </h1>
-        <p className="mt-4 text-lg text-slate-600">
+        <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
           Production-ready Next.js + TypeScript + Tailwind, with testable
-          utility modules and a small component library to build on.
+          utility modules, dark mode, and a small component library to build on.
         </p>
         <div className="mt-8 flex gap-3">
           <Link href="/about">
@@ -51,16 +60,12 @@ export default function HomePage() {
         </div>
       </div>
 
-      <ul className="mt-16 grid gap-6 sm:grid-cols-2">
+      <ul className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURES.map((feature) => (
-          <li
-            key={feature.title}
-            className="rounded-lg border border-slate-200 p-6"
-          >
-            <h2 className="text-base font-semibold text-slate-900">
-              {feature.title}
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">{feature.body}</p>
+          <li key={feature.title}>
+            <Card title={feature.title} interactive>
+              {feature.body}
+            </Card>
           </li>
         ))}
       </ul>

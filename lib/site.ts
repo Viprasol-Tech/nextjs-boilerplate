@@ -12,5 +12,14 @@ export function siteConfig(): SeoConfig {
     siteUrl: env.siteUrl,
     defaultDescription:
       "Production-ready Next.js (App Router) + TypeScript + Tailwind starter.",
+    defaultKeywords: [
+      "nextjs",
+      "boilerplate",
+      "typescript",
+      "tailwindcss",
+      "react",
+      "app-router",
+    ],
+    twitterHandle: "@viprasol",
   };
 }

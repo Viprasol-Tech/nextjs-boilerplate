@@ -3,6 +3,9 @@ import {
   absoluteUrl,
   formatTitle,
   buildMetadata,
+  mergeKeywords,
+  normalizeHandle,
+  buildWebSiteJsonLd,
   type SeoConfig,
 } from "@/lib/seo";
 
@@ -73,5 +76,66 @@ describe("buildMetadata", () => {
     expect(
       meta.twitter && "card" in meta.twitter ? meta.twitter.card : undefined,
     ).toBe("summary_large_image");
+  });
+
+  it("emits indexable robots by default and noindex when requested", () => {
+    const indexed = buildMetadata(config);
+    expect(indexed.robots).toEqual({ index: true, follow: true });
+    const hidden = buildMetadata(config, { noindex: true });
+    expect(hidden.robots).toEqual({ index: false, follow: false });
+  });
+
+  it("merges site-wide and page-level keywords", () => {
+    const withKeywords: SeoConfig = {
+      ...config,
+      defaultKeywords: ["next", "react"],
+    };
+    const meta = buildMetadata(withKeywords, { keywords: ["seo", "react"] });
+    expect(meta.keywords).toEqual(["next", "react", "seo"]);
+  });
+
+  it("adds a twitter creator when configured", () => {
+    const withHandle: SeoConfig = { ...config, twitterHandle: "viprasol" };
+    const meta = buildMetadata(withHandle);
+    expect(
+      meta.twitter && "creator" in meta.twitter
+        ? meta.twitter.creator
+        : undefined,
+    ).toBe("@viprasol");
+  });
+});
+
+describe("mergeKeywords", () => {
+  it("de-duplicates case-insensitively and preserves order", () => {
+    expect(mergeKeywords(["A", "b"], ["B", "c"])).toEqual(["A", "b", "c"]);
+  });
+
+  it("trims and drops blanks", () => {
+    expect(mergeKeywords([" x ", ""], undefined)).toEqual(["x"]);
+  });
+});
+
+describe("normalizeHandle", () => {
+  it("adds a leading @ and strips extras", () => {
+    expect(normalizeHandle("viprasol")).toBe("@viprasol");
+    expect(normalizeHandle("@@viprasol")).toBe("@viprasol");
+  });
+
+  it("returns undefined for empty input", () => {
+    expect(normalizeHandle(undefined)).toBeUndefined();
+    expect(normalizeHandle("  ")).toBeUndefined();
+  });
+});
+
+describe("buildWebSiteJsonLd", () => {
+  it("builds a schema.org WebSite object", () => {
+    const jsonLd = buildWebSiteJsonLd(config);
+    expect(jsonLd).toEqual({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Acme",
+      url: "https://acme.test/",
+      description: "Default description.",
+    });
   });
 });
